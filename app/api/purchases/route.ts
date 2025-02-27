@@ -38,7 +38,6 @@ export async function POST(request: NextRequest) {
       });
 
       // Check if customer qualifies for a reward
-
       let newReward = null;
       if (updatedCustomer.purchaseCount % 5 === 0) {
         // Create a reward

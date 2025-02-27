@@ -6,7 +6,7 @@ import { prisma } from "@/db/prisma";
       name: "mahmoud",
       email: "houdbaky@gmail.com",
       phone: "1234567890",
-      qrCodeId: "some-qr-code-id", // Add a valid qrCodeId here
+      qrCodeId: crypto.randomUUID(), // Add a valid qrCodeId here
     },
   });
 

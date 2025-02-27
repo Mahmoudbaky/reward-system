@@ -56,9 +56,19 @@ const ScanPage = () => {
       }
 
       // Parse QR code data
-      const qrData = parseQRCode(decodedText);
+      let qrData;
+      try {
+        qrData = parseQRCode(decodedText);
+      } catch (parseError) {
+        // If parsing as JSON fails, try using the raw string as the QR code ID
+        // This handles the case where the QR might just contain the ID directly
+        qrData = { customerId: decodedText };
+      }
 
-      // Fetch customer data
+      // Fetch customer data using the QR code ID
+      if (!qrData) {
+        throw new Error("QR data is undefined");
+      }
       const response = await fetch(`/api/customers/qr/${qrData.customerId}`);
 
       if (!response.ok) {
@@ -161,7 +171,7 @@ const ScanPage = () => {
       )}
 
       {customer && (
-        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+        <div className="bg-black shadow-md rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Customer Information</h2>
           <p>
             <strong>Name:</strong> {customer.name || "N/A"}

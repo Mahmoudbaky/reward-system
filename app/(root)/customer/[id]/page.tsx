@@ -59,7 +59,7 @@ const CustomerPage = async (props: {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">
+      <h1 className=" text-2xl font-bold mb-6">
         {customer.name ? `${customer.name}'s` : "Your"} Rewards Card
       </h1>
 
@@ -67,7 +67,7 @@ const CustomerPage = async (props: {
         <div className="p-6">
           <div className="flex justify-between items-start">
             <div>
-              <h2 className="text-xl font-semibold">
+              <h2 className="text-black text-xl font-semibold">
                 {customer.name || "Valued Customer"}
               </h2>
               {customer.email && (
@@ -111,7 +111,7 @@ const CustomerPage = async (props: {
         </div>
 
         <div className="bg-gray-50 p-6 border-t border-gray-200">
-          <h3 className="text-lg font-medium mb-4">Your QR Code</h3>
+          <h3 className="text-black text-lg font-medium mb-4">Your QR Code</h3>
 
           <div className="flex justify-center">
             <div className="p-4 bg-white rounded-lg shadow">

@@ -4,21 +4,16 @@ import QRCode from "qrcode";
 
 /**
  * Generate a QR code for a customer
- * @param customerId Customer's unique ID
+ * @param qrCodeId Customer's unique QR code ID
  * @returns Base64 encoded QR code image
  */
-export async function generateQRCode(customerId: string): Promise<string> {
-  const qrData: QRCodeData = {
-    customerId,
-    timestamp: Date.now(),
-  };
-
-  // Convert QR data to JSON string
-  const qrString = JSON.stringify(qrData);
+export async function generateQRCode(qrCodeId: string): Promise<string> {
+  // We'll just use the QR code ID directly in the QR code
+  // This simplifies scanning and reduces chances of errors
 
   // Generate QR code as base64 string
   try {
-    const qrBase64 = await QRCode.toDataURL(qrString, {
+    const qrBase64 = await QRCode.toDataURL(qrCodeId, {
       errorCorrectionLevel: "H",
       margin: 1,
       width: 300,
@@ -35,12 +30,15 @@ export async function generateQRCode(customerId: string): Promise<string> {
  * @param qrData String data from scanned QR code
  * @returns Parsed QR code data object
  */
-export function parseQRCode(qrData: string): QRCodeData {
+export function parseQRCode(qrData: string): QRCodeData | undefined {
   try {
+    // First try to parse as JSON
     const parsed = JSON.parse(qrData);
     return QRCodeDataSchema.parse(parsed);
   } catch (error) {
-    console.error("Failed to parse QR code data:", error);
-    throw new Error("Invalid QR code format");
+    // If parsing as JSON fails, assume the raw string is the QR code ID
+    console.log(error);
+    // return { customerId: qrData , timestamp: };
+    return undefined;
   }
 }
