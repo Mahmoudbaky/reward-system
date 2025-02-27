@@ -1,18 +1,27 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, FormEvent } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { parseQRCode } from "@/lib/actions/qr-code.actions";
 
+interface Customer {
+  qrCodeId: string;
+  name: string;
+  email: string;
+  purchaseCount: number;
+  rewardsEarned: number;
+  rewardsUsed: number;
+}
+
 const ScanPage = () => {
   const [scanning, setScanning] = useState(false);
-  const [customer, setCustomer] = useState(null);
+  const [customer, setCustomer] = useState<Customer | null>(null);
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [reward, setReward] = useState(null);
-  const scannerRef = useRef(null);
+  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
 
   useEffect(() => {
     // Initialize scanner
@@ -37,7 +46,7 @@ const ScanPage = () => {
     };
   }, [scanning]);
 
-  const onScanSuccess = async (decodedText) => {
+  const onScanSuccess = async (decodedText: any) => {
     try {
       // Stop scanning
       if (scannerRef.current) {
@@ -63,7 +72,7 @@ const ScanPage = () => {
     }
   };
 
-  const onScanFailure = (error) => {
+  const onScanFailure = (error: any) => {
     console.warn(`QR code scan error: ${error}`);
   };
 
@@ -75,7 +84,7 @@ const ScanPage = () => {
     setReward(null);
   };
 
-  const handlePurchaseSubmit = async (e) => {
+  const handlePurchaseSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!customer || !amount) {
