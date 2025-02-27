@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
 
@@ -14,43 +14,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Customer {
-  id             String    @id @default(cuid())
-  name           String?
-  email          String?   @unique
-  phone          String?   @unique
-  qrCodeId       String    @unique
-  purchaseCount  Int       @default(0)
-  rewardsEarned  Int       @default(0)
-  rewardsUsed    Int       @default(0)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  purchases      Purchase[]
-  rewards        Reward[]
+model User {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String    @default("new_user")
+  email         String    @unique(map: "user_email_idx")
+  emailVerified DateTime? @db.Timestamp(6)
+  image         String?
+  password      String?
+  role          String    @default("user")
+  createdAt     DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime  @updatedAt
 }
 
+model Customer {
+  id            String     @id @default(cuid())
+  name          String?
+  email         String?    @unique
+  phone         String?    @unique
+  qrCodeId      String     @unique
+  purchaseCount Int        @default(0)
+  rewardsEarned Int        @default(0)
+  rewardsUsed   Int        @default(0)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  purchases     Purchase[]
+  rewards       Reward[]
+}
 
 model Purchase {
-  id          String    @id @default(cuid())
-  customerId  String
-  amount      Float
-  createdAt   DateTime  @default(now())
-  customer    Customer  @relation(fields: [customerId], references: [id])
+  id         String   @id @default(cuid())
+  customerId String
+  amount     Float
+  createdAt  DateTime @default(now())
+  customer   Customer @relation(fields: [customerId], references: [id])
 }
 
 model Reward {
-  id          String    @id @default(cuid())
-  customerId  String
-  isUsed      Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  usedAt      DateTime?
-  customer    Customer  @relation(fields: [customerId], references: [id])
+  id         String    @id @default(cuid())
+  customerId String
+  isUsed     Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  usedAt     DateTime?
+  customer   Customer  @relation(fields: [customerId], references: [id])
 }
 
 model Cashier {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
-  email     String    @unique
-  password  String    // Hashed password
-  createdAt DateTime  @default(now())
+  email     String   @unique
+  password  String // Hashed password
+  createdAt DateTime @default(now())
 }
