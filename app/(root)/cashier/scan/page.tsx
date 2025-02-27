@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, FormEvent } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { parseQRCode } from "@/lib/actions/qr-code.actions";
+import { CustomerCreateSchema } from "@/lib/validators";
 
 interface Customer {
   qrCodeId: string;
