@@ -49,6 +49,7 @@ const ScanPage = () => {
 
   const onScanSuccess = async (decodedText: any) => {
     try {
+      console.log(decodedText);
       // Stop scanning
       if (scannerRef.current) {
         scannerRef.current.clear();
@@ -65,6 +66,7 @@ const ScanPage = () => {
         qrData = { customerId: decodedText };
       }
 
+      console.log(qrData);
       // Fetch customer data using the QR code ID
       if (!qrData) {
         throw new Error("QR data is undefined");
@@ -171,7 +173,7 @@ const ScanPage = () => {
       )}
 
       {customer && (
-        <div className="bg-black shadow-md rounded-lg p-6 mb-6">
+        <div className="bg-white text-black shadow-md rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Customer Information</h2>
           <p>
             <strong>Name:</strong> {customer.name || "N/A"}

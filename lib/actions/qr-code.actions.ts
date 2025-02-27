@@ -30,15 +30,13 @@ export async function generateQRCode(qrCodeId: string): Promise<string> {
  * @param qrData String data from scanned QR code
  * @returns Parsed QR code data object
  */
-export function parseQRCode(qrData: string): QRCodeData | undefined {
+export function parseQRCode(qrData: string): QRCodeData {
   try {
     // First try to parse as JSON
     const parsed = JSON.parse(qrData);
     return QRCodeDataSchema.parse(parsed);
   } catch (error) {
     // If parsing as JSON fails, assume the raw string is the QR code ID
-    console.log(error);
-    // return { customerId: qrData , timestamp: };
-    return undefined;
+    return { customerId: qrData };
   }
 }

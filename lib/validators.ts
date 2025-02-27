@@ -3,7 +3,7 @@ import { z } from "zod";
 // QR code data schema
 export const QRCodeDataSchema = z.object({
   customerId: z.string(),
-  timestamp: z.number(),
+  timestamp: z.number().optional(),
 });
 
 // Create customer data schema
