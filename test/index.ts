@@ -1,11 +1,11 @@
 import { prisma } from "@/db/prisma";
 
 (async () => {
+  console.log("hi");
   await prisma.customer.create({
     data: {
-      name: "mahmoud",
-      email: "houdbaky@gmail.com",
-      phone: "1234567890",
+      name: "kiksh",
+      phone: "8748928",
       qrCodeId: crypto.randomUUID(), // Add a valid qrCodeId here
     },
   });

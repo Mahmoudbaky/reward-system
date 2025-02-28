@@ -1,6 +1,10 @@
-// config/database.ts
+import dotenv from "dotenv";
+dotenv.config();
+
 export const getDatabaseUrl = () => {
   const url = process.env.DATABASE_URL;
+
+  console.log("****************DATABASE_URL*****************", url);
 
   if (!url) {
     // In production, log the error but provide a fallback to prevent crashes

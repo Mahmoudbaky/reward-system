@@ -153,7 +153,15 @@ const CustomerPage = async (props: {
                       {new Date(purchase.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${purchase.amount.toFixed(2)}
+                      <div className="flex items-center gap-3">
+                        <Image
+                          src="/images/riyal.PNG"
+                          alt="riyal"
+                          width={15}
+                          height={15}
+                        />
+                        <p>{purchase.amount.toFixed(2)}</p>
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -21,3 +21,12 @@ export const PurchaseCreateSchema = z.object({
 export const UseRewardSchema = z.object({
   rewardId: z.string(),
 });
+
+export const FindCustomerSchema = z.object({
+  phoneNumber: z.string().min(1, "Phone number is required"),
+});
+
+export const CreateCustomerSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  phone: z.string().min(1, "Phone is required"),
+});
