@@ -70,9 +70,6 @@ const CustomerPage = async (props: {
               <h2 className="text-black text-xl font-semibold">
                 {customer.name || "Valued Customer"}
               </h2>
-              {customer.email && (
-                <p className="text-gray-600">{customer.email}</p>
-              )}
             </div>
 
             <div className="text-center bg-blue-50 p-3 rounded-lg">
@@ -177,3 +174,7 @@ const CustomerPage = async (props: {
 };
 
 export default CustomerPage;
+
+// {customer.email && (
+//   <p className="text-gray-600">{customer.email}</p>
+// )}
