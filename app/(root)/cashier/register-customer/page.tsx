@@ -1,8 +1,8 @@
 "use client";
 
 // import { FormEvent, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
+// import Link from "next/link";
+// import Image from "next/image";
 import {
   Card,
   CardContent,
