@@ -49,7 +49,7 @@ const FindByPhone = () => {
   };
 
   return (
-    <div className="mx-auto min-h-screen flex items-center justify-center">
+    <div className="mx-auto min-h-screen flex items-center justify-center bg-gradient-to-b from-amber-50 to-amber-100">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Customer Lookup</CardTitle>

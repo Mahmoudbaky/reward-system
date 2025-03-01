@@ -71,7 +71,7 @@ const CustomerPage = async (props: {
       <Card className="w-full max-w-xl bg-white shadow-lg">
         <CardHeader className="bg-amber-800 text-amber-50 rounded-t-lg">
           <CardTitle className="text-center text-2xl font-bold">
-            Cafe Rewards
+            Customer Reward Card
           </CardTitle>
         </CardHeader>
 
@@ -84,7 +84,13 @@ const CustomerPage = async (props: {
                   {customer.phone}
                 </p>
               </div>
-              <h1>Logo</h1>
+              <Image
+                src="/images/Logo.png"
+                alt="Oro Logo"
+                width={150}
+                height={150}
+                className=""
+              />
             </div>
 
             <div className="mb-6">
