@@ -178,9 +178,9 @@ const ScanPage = () => {
           <p>
             <strong>Name:</strong> {customer.name || "N/A"}
           </p>
-          <p>
+          {/* <p>
             <strong>Email:</strong> {customer.email || "N/A"}
-          </p>
+          </p> */}
           <p>
             <strong>Purchase Count:</strong> {customer.purchaseCount}
           </p>

@@ -6,7 +6,7 @@ import { z } from "zod";
 import { formatError } from "../utils";
 
 export const getCustomerByPhoneNumber = async (phoneNumber: string) => {
-  const customer = await prisma.customer.findUnique({
+  const customer = await prisma.customer.findFirst({
     where: {
       phone: phoneNumber,
     },

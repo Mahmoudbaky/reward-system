@@ -97,20 +97,25 @@ const CustomerPage = async (props: {
               <h4 className="text-sm font-medium mb-2">
                 Progress to Free Coffee:
               </h4>
-              <div className="grid grid-cols-5 gap-2 mb-2">
+              <div className="grid grid-cols-5  mb-2 m-0">
                 {Array.from({ length: TOTAL_PURCHASES_NEEDED }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={`flex items-center justify-center p-2 rounded-md ${
-                      i < customer.purchaseCount
-                        ? "bg-amber-100 text-amber-800"
-                        : "bg-gray-100 text-gray-400"
-                    }`}
-                  >
+                  <div key={i} className="">
                     {i < customer.purchaseCount ? (
-                      <Coffee className="h-6 w-6 fill-amber-800" />
+                      <Image
+                        src="/images/oro-cup.png"
+                        alt="oro-cup"
+                        width={50}
+                        height={50}
+                        className="mx-auto"
+                      />
                     ) : (
-                      <Coffee className="h-6 w-6" />
+                      <Image
+                        src="/images/oro-cup-gray.png"
+                        alt="oro-cup"
+                        width={50}
+                        height={50}
+                        className="mx-auto"
+                      />
                     )}
                   </div>
                 ))}
@@ -149,10 +154,6 @@ const CustomerPage = async (props: {
 };
 
 export default CustomerPage;
-
-// {customer.email && (
-//   <p className="text-gray-600">{customer.email}</p>
-// )}
 
 // <div className="container mx-auto px-4 py-8">
 //       <h1 className=" text-2xl font-bold mb-6">
