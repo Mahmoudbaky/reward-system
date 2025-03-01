@@ -1,8 +1,8 @@
 "use client";
-
 import { useState, useEffect, useRef, FormEvent } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { parseQRCode } from "@/lib/actions/qr-code.actions";
+import { Button } from "@/components/ui/button";
 // import { revalidatePath } from "next/cache";
 // import { CustomerCreateSchema } from "@/lib/validators";
 
@@ -180,9 +180,6 @@ const ScanPage = () => {
           <p>
             <strong>Name:</strong> {customer.name || "N/A"}
           </p>
-          {/* <p>
-            <strong>Email:</strong> {customer.email || "N/A"}
-          </p> */}
           <p>
             <strong>Purchase Count:</strong> {customer.purchaseCount}
           </p>
@@ -212,13 +209,24 @@ const ScanPage = () => {
                   required
                 />
               </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-              >
-                {loading ? "Processing..." : "Record Purchase"}
-              </button>
+              <div className="flex justify-between">
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+                >
+                  {loading ? "Processing..." : "Record Purchase"}
+                </Button>
+
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  variant="default"
+                  className=" hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+                >
+                  {loading ? "Processing..." : "Record Purchase"}
+                </Button>
+              </div>
             </form>
           </div>
         </div>
