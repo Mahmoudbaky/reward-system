@@ -44,7 +44,7 @@ export default function CashierHomePage() {
         </div>
       </div>
 
-      <div className="mt-12 text-center">
+      {/* <div className="mt-12 text-center">
         <h2 className="text-2xl font-bold mb-4">How It Works</h2>
         <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           <div className="bg-blue-50 p-6 rounded-lg">
@@ -71,7 +71,7 @@ export default function CashierHomePage() {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

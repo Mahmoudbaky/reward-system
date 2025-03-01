@@ -1,0 +1,1 @@
+export const TOTAL_PURCHASES_NEEDED = 5;

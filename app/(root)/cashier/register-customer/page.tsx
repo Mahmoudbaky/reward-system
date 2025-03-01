@@ -27,6 +27,8 @@ import { CreateCustomerSchema } from "@/lib/validators";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createCustomer } from "@/lib/actions/customer.actions";
+import { toast } from "sonner";
+import { Toaster } from "sonner";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -40,13 +42,25 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (values: z.infer<typeof CreateCustomerSchema>) => {
-    const response = await createCustomer(values);
+    const res = await createCustomer(values);
+    if (res.success) {
+      toast.success("Customer created", {
+        duration: 4000,
+        description: res.message,
+      });
 
-    console.log(values);
-
-    // const customer = await getCustomerByPhoneNumber(values.phoneNumber);
-    // router.push(`/customer/${customer.id}`);
-    // // console.log( customer);
+      form.reset();
+    } else {
+      toast.error("Error creating customer", {
+        duration: 4000,
+        description: res.message,
+        style: {
+          backgroundColor: "red",
+          color: "white",
+        },
+      });
+      form.reset();
+    }
   };
 
   return (
@@ -110,6 +124,7 @@ export default function RegisterPage() {
           )}
         </CardFooter> */}
       </Card>
+      <Toaster />
     </div>
   );
 }

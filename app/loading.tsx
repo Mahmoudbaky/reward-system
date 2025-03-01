@@ -1,9 +1,10 @@
-import { Loader2 } from "lucide-react";
+import Image from "next/image";
+import loader from "@/assets/loader.gif";
 
 const Loading = () => {
   return (
     <div className="flex justify-center items-center  h-screen">
-      <Loader2 size={64} />
+      <Image src={loader} alt="loading" width={150} height={150} />
     </div>
   );
 };
