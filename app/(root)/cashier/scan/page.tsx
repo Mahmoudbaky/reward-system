@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, FormEvent } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { parseQRCode } from "@/lib/actions/qr-code.actions";
 import { Button } from "@/components/ui/button";
+import { set } from "zod";
 // import { revalidatePath } from "next/cache";
 // import { CustomerCreateSchema } from "@/lib/validators";
 
@@ -24,7 +25,12 @@ const ScanPage = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [reward, setReward] = useState(null);
+  const [rewards, setRewards] = useState(0);
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+
+  useEffect(() => {
+    setRewards((prevRewards) => prevRewards + 1);
+  }, [reward]);
 
   useEffect(() => {
     // Initialize scanner
@@ -81,6 +87,8 @@ const ScanPage = () => {
 
       const customerData = await response.json();
       setCustomer(customerData);
+
+      setRewards(customerData.rewardsEarned - customerData.rewardsUsed);
     } catch (error) {
       console.error("QR scan processing error:", error);
       setError("Invalid QR code or customer not found");
@@ -138,7 +146,7 @@ const ScanPage = () => {
         ...customer,
         purchaseCount: result.currentPurchaseCount,
       });
-      // revalidatePath(`/customer/${customer.id}`);
+
       setAmount("");
     } catch (error) {
       console.error("Purchase submission error:", error);
@@ -148,17 +156,40 @@ const ScanPage = () => {
     }
   };
 
+  const handleRedeemReward = async () => {
+    // 'use server'
+    // try {
+    //   const response = await fetch(`/api/rewards/${reward.id}/redeem`, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   });
+    //       method: "POST",
+    //   });
+    //   if (!response.ok) {
+    //     throw new Error("Failed to redeem reward");
+    //   }
+    //   setRewards(rewards - 1);
+    //   setReward(null);
+    //   // revalidatePath(`/customer/${customer.id}`);
+    // } catch (error) {
+    //   console.error("Failed to redeem reward:", error);
+    //   setError("Failed to redeem reward");
+    // }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 ">
       <h1 className="text-2xl font-bold mb-6">Cashier Station</h1>
 
       {!scanning && !customer && (
-        <button
+        <Button
           onClick={handleStartScan}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          // className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
         >
           Scan Customer QR Code
-        </button>
+        </Button>
       )}
 
       {scanning && (
@@ -184,8 +215,7 @@ const ScanPage = () => {
             <strong>Purchase Count:</strong> {customer.purchaseCount}
           </p>
           <p>
-            <strong>Available Rewards:</strong>{" "}
-            {customer.rewardsEarned - customer.rewardsUsed}
+            <strong>Available Rewards:</strong> {rewards}
           </p>
 
           <div className="mt-6">
@@ -217,15 +247,16 @@ const ScanPage = () => {
                 >
                   {loading ? "Processing..." : "Record Purchase"}
                 </Button>
-
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  variant="default"
-                  className=" hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-                >
-                  {loading ? "Processing..." : "Record Purchase"}
-                </Button>
+                {rewards > 0 && (
+                  <Button
+                    onClick={handleRedeemReward}
+                    disabled={loading}
+                    variant="default"
+                    className=" hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+                  >
+                    {loading ? "Processing..." : "Redeem reward"}
+                  </Button>
+                )}
               </div>
             </form>
           </div>
@@ -250,12 +281,12 @@ const ScanPage = () => {
 
       {customer && (
         <div className="mt-6">
-          <button
+          <Button
             onClick={handleStartScan}
             className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
           >
             Scan New Customer
-          </button>
+          </Button>
         </div>
       )}
     </div>
