@@ -3,9 +3,11 @@
 import { useState, useEffect, useRef, FormEvent } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { parseQRCode } from "@/lib/actions/qr-code.actions";
+// import { revalidatePath } from "next/cache";
 // import { CustomerCreateSchema } from "@/lib/validators";
 
 interface Customer {
+  id: string;
   qrCodeId: string;
   name: string;
   email: string;
@@ -136,7 +138,7 @@ const ScanPage = () => {
         ...customer,
         purchaseCount: result.currentPurchaseCount,
       });
-
+      // revalidatePath(`/customer/${customer.id}`);
       setAmount("");
     } catch (error) {
       console.error("Purchase submission error:", error);

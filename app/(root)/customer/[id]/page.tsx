@@ -1,3 +1,5 @@
+// "use client";
+
 import {
   Card,
   CardContent,
@@ -63,6 +65,9 @@ const CustomerPage = async (props: {
   // Calculate available rewards
   const availableRewards = customer.rewards.filter((r) => !r.isUsed).length;
 
+  // Calculate used rewards
+  const usedRewards = customer.rewards.filter((r) => r.isUsed).length;
+
   // Calculate purchases until next reward
   const purchasesUntilReward = 5 - (customer.purchaseCount % 5);
 
@@ -77,7 +82,7 @@ const CustomerPage = async (props: {
 
         <CardContent className="pt-6 pb-2">
           <>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-3">
               <div>
                 <h3 className="font-semibold text-lg">{customer.name}</h3>
                 <p className="text-sm text-muted-foreground">
@@ -93,27 +98,36 @@ const CustomerPage = async (props: {
               />
             </div>
 
+            <div className="text-center grid grid-cols-1 md:grid-cols-2 gap-3  p-3 rounded-lg">
+              <div className=" text-base bg-green-50 rounded-md ">
+                <h1 className="text-green-500 font-bold py-1">{`Available Rewards: ${availableRewards}`}</h1>
+              </div>
+              <div className=" text-base bg-amber-100 rounded-md ">
+                <h1 className="text-amber-600 font-bold py-1">{`Used Rewards: ${usedRewards}`}</h1>
+              </div>
+            </div>
+
             <div className="mb-6">
               <h4 className="text-sm font-medium mb-2">
                 Progress to Free Coffee:
               </h4>
-              <div className="grid grid-cols-5  mb-2 m-0">
+              <div className="flex mb-2 mx-auto">
                 {Array.from({ length: TOTAL_PURCHASES_NEEDED }).map((_, i) => (
-                  <div key={i} className="">
-                    {i < customer.purchaseCount ? (
+                  <div key={i} className="mx-auto">
+                    {i < 5 - purchasesUntilReward ? (
                       <Image
                         src="/images/oro-cup.png"
                         alt="oro-cup"
-                        width={50}
-                        height={50}
-                        className="mx-auto"
+                        width={70}
+                        height={70}
+                        className="mx-auto "
                       />
                     ) : (
                       <Image
                         src="/images/oro-cup-gray.png"
                         alt="oro-cup"
-                        width={50}
-                        height={50}
+                        width={70}
+                        height={70}
                         className="mx-auto"
                       />
                     )}
@@ -135,8 +149,8 @@ const CustomerPage = async (props: {
                 <Image
                   src={qrCodeImage}
                   alt="Reward QR Code"
-                  width={200}
-                  height={200}
+                  width={150}
+                  height={150}
                 />
               </div>
             </div>
