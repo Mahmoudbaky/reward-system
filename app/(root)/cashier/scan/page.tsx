@@ -3,9 +3,19 @@ import { useState, useEffect, useRef, FormEvent } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { parseQRCode } from "@/lib/actions/qr-code.actions";
 import { Button } from "@/components/ui/button";
-import { set } from "zod";
-// import { revalidatePath } from "next/cache";
-// import { CustomerCreateSchema } from "@/lib/validators";
+import { toast } from "sonner";
+import { Toaster } from "sonner";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { formatId } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface Customer {
   id: string;
@@ -17,6 +27,13 @@ interface Customer {
   rewardsUsed: number;
 }
 
+interface Reward {
+  customerId: string;
+  id: string;
+  isUsed: boolean;
+  createdAt: string;
+}
+
 const ScanPage = () => {
   const [scanning, setScanning] = useState(false);
   const [customer, setCustomer] = useState<Customer | null>(null);
@@ -24,13 +41,15 @@ const ScanPage = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [reward, setReward] = useState(null);
-  const [rewards, setRewards] = useState(0);
+  const [rewards, setRewards] = useState<Reward[] | null>([]);
+  const [rewardsCount, setRewardsCount] = useState(0);
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
 
   useEffect(() => {
-    setRewards((prevRewards) => prevRewards + 1);
-  }, [reward]);
+    if (rewards && rewards.length > 0) {
+      setRewardsCount(rewards.filter((reward) => !reward.isUsed).length);
+    }
+  }, [rewards]);
 
   useEffect(() => {
     // Initialize scanner
@@ -74,7 +93,6 @@ const ScanPage = () => {
         qrData = { customerId: decodedText };
       }
 
-      console.log(qrData);
       // Fetch customer data using the QR code ID
       if (!qrData) {
         throw new Error("QR data is undefined");
@@ -86,9 +104,10 @@ const ScanPage = () => {
       }
 
       const customerData = await response.json();
+      console.log(customerData);
       setCustomer(customerData);
-
-      setRewards(customerData.rewardsEarned - customerData.rewardsUsed);
+      setRewards(customerData.rewards);
+      setRewardsCount(customerData.rewardsEarned);
     } catch (error) {
       console.error("QR scan processing error:", error);
       setError("Invalid QR code or customer not found");
@@ -104,12 +123,13 @@ const ScanPage = () => {
     setCustomer(null);
     setError("");
     setSuccess(false);
-    setReward(null);
+    setRewards([]);
+    setRewardsCount(0);
   };
 
   const handlePurchaseSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
+    console.log(rewards);
     if (!customer || !amount) {
       setError("Customer and amount are required");
       return;
@@ -138,7 +158,9 @@ const ScanPage = () => {
       setSuccess(true);
 
       if (result.newReward) {
-        setReward(result.newReward);
+        setRewards((prevRewards) =>
+          prevRewards ? [...prevRewards, result.newReward] : [result.newReward]
+        );
       }
 
       // Update customer data with new purchase count
@@ -148,6 +170,13 @@ const ScanPage = () => {
       });
 
       setAmount("");
+
+      if (success) {
+        toast.success("Purchase done", {
+          description: "Purchase recorded successfully!",
+          duration: 2000,
+        });
+      }
     } catch (error) {
       console.error("Purchase submission error:", error);
       setError("Failed to record purchase");
@@ -156,27 +185,39 @@ const ScanPage = () => {
     }
   };
 
-  const handleRedeemReward = async () => {
-    // 'use server'
-    // try {
-    //   const response = await fetch(`/api/rewards/${reward.id}/redeem`, {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   });
-    //       method: "POST",
-    //   });
-    //   if (!response.ok) {
-    //     throw new Error("Failed to redeem reward");
-    //   }
-    //   setRewards(rewards - 1);
-    //   setReward(null);
-    //   // revalidatePath(`/customer/${customer.id}`);
-    // } catch (error) {
-    //   console.error("Failed to redeem reward:", error);
-    //   setError("Failed to redeem reward");
-    // }
+  const handleRedeemReward = async (rewardId: string) => {
+    try {
+      const response = await fetch(`/api/rewards/use`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          rewardId,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(
+          `Failed to redeem reward: ${response.status} ${errorMessage}`
+        );
+      }
+      if (!response.ok) {
+        throw new Error("Failed to redeem reward");
+      }
+      const updatedReward = await response.json();
+      console.log(updatedReward);
+      setRewards((prevRewards) =>
+        prevRewards
+          ? prevRewards.filter((reward) => reward.id !== rewardId)
+          : []
+      );
+      setRewardsCount((prevCount) => prevCount - 1);
+    } catch (error) {
+      console.error("Failed to redeem reward:", error);
+      setError("Failed to redeem reward");
+    }
   };
 
   return (
@@ -184,12 +225,7 @@ const ScanPage = () => {
       <h1 className="text-2xl font-bold mb-6">Cashier Station</h1>
 
       {!scanning && !customer && (
-        <Button
-          onClick={handleStartScan}
-          // className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-        >
-          Scan Customer QR Code
-        </Button>
+        <Button onClick={handleStartScan}>Scan Customer QR Code</Button>
       )}
 
       {scanning && (
@@ -215,7 +251,7 @@ const ScanPage = () => {
             <strong>Purchase Count:</strong> {customer.purchaseCount}
           </p>
           <p>
-            <strong>Available Rewards:</strong> {rewards}
+            <strong>Available Rewards:</strong> {rewardsCount}
           </p>
 
           <div className="mt-6">
@@ -247,16 +283,6 @@ const ScanPage = () => {
                 >
                   {loading ? "Processing..." : "Record Purchase"}
                 </Button>
-                {rewards > 0 && (
-                  <Button
-                    onClick={handleRedeemReward}
-                    disabled={loading}
-                    variant="default"
-                    className=" hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-                  >
-                    {loading ? "Processing..." : "Redeem reward"}
-                  </Button>
-                )}
               </div>
             </form>
           </div>
@@ -269,7 +295,8 @@ const ScanPage = () => {
         </div>
       )}
 
-      {reward && (
+      {/* TODO: impelement this the toast way */}
+      {/* {rewards.length > 0 && (
         <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded mb-4">
           <p className="font-bold">🎉 Reward Earned! 🎉</p>
           <p>
@@ -277,6 +304,50 @@ const ScanPage = () => {
             next visit.
           </p>
         </div>
+      )} */}
+
+      {rewards && rewards.length > 0 && (
+        <Table className="mx-auto">
+          <TableCaption>A list of your recent rewards</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="">Reward</TableHead>
+              <TableHead>Available?</TableHead>
+              <TableHead>Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rewards.map((r) => (
+              <TableRow key={r.id}>
+                <TableCell className="font-medium">
+                  {formatId(r.id || "")}
+                </TableCell>
+                <TableCell>
+                  {r.isUsed ? (
+                    <Badge variant="default" className="bg-red-500">
+                      Not Available
+                    </Badge>
+                  ) : (
+                    <Badge variant="default" className="bg-green-500">
+                      Available
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    onClick={() => {
+                      handleRedeemReward(r.id);
+                    }}
+                    variant="default"
+                    size="sm"
+                  >
+                    Redeem
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
 
       {customer && (
@@ -289,6 +360,8 @@ const ScanPage = () => {
           </Button>
         </div>
       )}
+
+      <Toaster />
     </div>
   );
 };

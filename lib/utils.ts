@@ -27,3 +27,7 @@ export const formatError = (error: any) => {
       : JSON.stringify(error.message);
   }
 };
+
+export const formatId = (id: string) => {
+  return `${id.substring(id.length - 6)}`;
+};

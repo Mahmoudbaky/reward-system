@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
         where: { id: reward.customerId },
         data: {
           rewardsUsed: { increment: 1 },
+          rewardsEarned: { decrement: 1 },
         },
       });
 
