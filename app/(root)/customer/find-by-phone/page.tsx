@@ -26,6 +26,9 @@ import { FindCustomerSchema } from "@/lib/validators";
 import { getCustomerByPhoneNumber } from "@/lib/actions/customer.actions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Toaster } from "sonner";
+
 // import { Input } from "@/components/ui/input"
 // import { lookupCustomer } from "@/lib/actions"
 // import type { CustomerData } from "@/lib/types"
@@ -43,8 +46,17 @@ const FindByPhone = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof FindCustomerSchema>) => {
-    const customer = await getCustomerByPhoneNumber(values.phoneNumber);
-    router.push(`/customer/${customer.id}`);
+    const res = await getCustomerByPhoneNumber(values.phoneNumber);
+
+    if (!res.success) {
+      toast.error(`${res.message}`, {
+        duration: 3000,
+        style: { backgroundColor: "red", color: "white" },
+      });
+      return;
+    }
+
+    router.push(`/customer/${res.data?.id}`);
     // console.log( customer);
   };
 
@@ -98,6 +110,7 @@ const FindByPhone = () => {
           )}
         </CardFooter>
       </Card>
+      <Toaster />
     </div>
   );
 };

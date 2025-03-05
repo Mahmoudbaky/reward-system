@@ -21,6 +21,7 @@ interface Customer {
   id: string;
   qrCodeId: string;
   name: string;
+  phone: string;
   email: string;
   purchaseCount: number;
   rewardsEarned: number;
@@ -248,11 +249,17 @@ const ScanPage = () => {
             <strong>Name:</strong> {customer.name || "N/A"}
           </p>
           <p>
+            <strong>Phone number:</strong> {customer.phone || "N/A"}
+          </p>
+          <p>
             <strong>Purchase Count:</strong> {customer.purchaseCount}
           </p>
           <p>
             <strong>Available Rewards:</strong> {rewardsCount}
           </p>
+          {/* <p>
+            <strong>Used Rewards:</strong> {customer.rewardsUsed}
+          </p> */}
 
           <div className="mt-6">
             <h3 className="text-lg font-medium mb-2">Record Purchase</h3>

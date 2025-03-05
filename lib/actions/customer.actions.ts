@@ -6,17 +6,21 @@ import { z } from "zod";
 import { formatError } from "../utils";
 
 export const getCustomerByPhoneNumber = async (phoneNumber: string) => {
-  const customer = await prisma.customer.findFirst({
-    where: {
-      phone: phoneNumber,
-    },
-  });
+  try {
+    const customer = await prisma.customer.findFirst({
+      where: {
+        phone: phoneNumber,
+      },
+    });
 
-  if (!customer) {
-    throw new Error("Customer not found");
+    if (!customer) {
+      throw new Error("Customer not found");
+    }
+
+    return { success: true, message: "Customer found", data: customer };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
   }
-
-  return customer;
 };
 
 export const createCustomer = async (
