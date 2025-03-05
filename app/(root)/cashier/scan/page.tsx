@@ -40,10 +40,10 @@ const ScanPage = () => {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [rewards, setRewards] = useState<Reward[] | null>([]);
   const [rewardsCount, setRewardsCount] = useState(0);
+  const [rewardsUsedCount, setRewardsUsedCount] = useState(0);
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
 
   useEffect(() => {
@@ -77,7 +77,6 @@ const ScanPage = () => {
 
   const onScanSuccess = async (decodedText: any) => {
     try {
-      console.log(decodedText);
       // Stop scanning
       if (scannerRef.current) {
         scannerRef.current.clear();
@@ -105,10 +104,10 @@ const ScanPage = () => {
       }
 
       const customerData = await response.json();
-      console.log(customerData);
       setCustomer(customerData);
       setRewards(customerData.rewards);
       setRewardsCount(customerData.rewardsEarned);
+      setRewardsUsedCount(customerData.rewardsUsed);
     } catch (error) {
       console.error("QR scan processing error:", error);
       setError("Invalid QR code or customer not found");
@@ -123,14 +122,15 @@ const ScanPage = () => {
     setScanning(true);
     setCustomer(null);
     setError("");
-    setSuccess(false);
+    // setSuccess(false);
     setRewards([]);
     setRewardsCount(0);
+    setRewardsUsedCount(0);
   };
 
   const handlePurchaseSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(rewards);
+
     if (!customer || !amount) {
       setError("Customer and amount are required");
       return;
@@ -156,7 +156,6 @@ const ScanPage = () => {
       }
 
       const result = await response.json();
-      setSuccess(true);
 
       if (result.newReward) {
         setRewards((prevRewards) =>
@@ -172,7 +171,7 @@ const ScanPage = () => {
 
       setAmount("");
 
-      if (success) {
+      if (response.ok) {
         toast.success("Purchase done", {
           description: "Purchase recorded successfully!",
           duration: 2000,
@@ -199,22 +198,32 @@ const ScanPage = () => {
       });
 
       if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(
-          `Failed to redeem reward: ${response.status} ${errorMessage}`
-        );
+        toast.error("Failed to redeem reward", {
+          description: "Failed to redeem reward",
+          duration: 2000,
+          style: {
+            color: "white",
+            backgroundColor: "#EF4444",
+          },
+        });
       }
-      if (!response.ok) {
-        throw new Error("Failed to redeem reward");
-      }
-      const updatedReward = await response.json();
-      console.log(updatedReward);
+
+      toast.success("Reward redeemed", {
+        description: "Reward redeemed successfully!",
+        duration: 2000,
+        style: {
+          color: "white",
+          backgroundColor: "#10B981",
+        },
+      });
+
       setRewards((prevRewards) =>
         prevRewards
           ? prevRewards.filter((reward) => reward.id !== rewardId)
           : []
       );
       setRewardsCount((prevCount) => prevCount - 1);
+      setRewardsUsedCount((prevCount) => prevCount + 1);
     } catch (error) {
       console.error("Failed to redeem reward:", error);
       setError("Failed to redeem reward");
@@ -257,9 +266,9 @@ const ScanPage = () => {
           <p>
             <strong>Available Rewards:</strong> {rewardsCount}
           </p>
-          {/* <p>
-            <strong>Used Rewards:</strong> {customer.rewardsUsed}
-          </p> */}
+          <p>
+            <strong>Used Rewards:</strong> {rewardsUsedCount}
+          </p>
 
           <div className="mt-6">
             <h3 className="text-lg font-medium mb-2">Record Purchase</h3>
@@ -293,12 +302,6 @@ const ScanPage = () => {
               </div>
             </form>
           </div>
-        </div>
-      )}
-
-      {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          Purchase recorded successfully!
         </div>
       )}
 

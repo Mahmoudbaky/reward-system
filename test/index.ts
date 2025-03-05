@@ -1,7 +1,6 @@
 import { prisma } from "@/db/prisma";
 
 (async () => {
-  console.log("hi");
   await prisma.customer.create({
     data: {
       name: "kiksh",

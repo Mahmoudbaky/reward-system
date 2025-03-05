@@ -57,7 +57,6 @@ const FindByPhone = () => {
     }
 
     router.push(`/customer/${res.data?.id}`);
-    // console.log( customer);
   };
 
   return (
