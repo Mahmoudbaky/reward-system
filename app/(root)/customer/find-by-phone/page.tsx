@@ -29,6 +29,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
 
+import { useTransition } from "react"; // for loader fix
+
 // import { Input } from "@/components/ui/input"
 // import { lookupCustomer } from "@/lib/actions"
 // import type { CustomerData } from "@/lib/types"
@@ -36,6 +38,7 @@ import { Toaster } from "sonner";
 
 const FindByPhone = () => {
   const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   const form = useForm<z.infer<typeof FindCustomerSchema>>({
@@ -46,21 +49,46 @@ const FindByPhone = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof FindCustomerSchema>) => {
-    const res = await getCustomerByPhoneNumber(values.phoneNumber);
+    try {
+      // Clear any previous errors
+      setError(null);
 
-    if (!res.success) {
-      toast.error(`${res.message}`, {
+      // Call the server action
+      const res = await getCustomerByPhoneNumber(values.phoneNumber);
+
+      if (!res.success) {
+        toast.error(`${res.message}`, {
+          duration: 3000,
+          style: { backgroundColor: "red", color: "white" },
+        });
+        return;
+      }
+
+      // Use startTransition for the navigation to show loading state
+      startTransition(() => {
+        router.push(`/customer/${res.data?.id}`);
+      });
+    } catch (e) {
+      setError("An unexpected error occurred. Please try again.");
+      toast.error("Failed to look up customer", {
         duration: 3000,
         style: { backgroundColor: "red", color: "white" },
       });
-      return;
     }
-
-    router.push(`/customer/${res.data?.id}`);
   };
 
   return (
     <div className="mx-auto min-h-screen flex items-center justify-center bg-gradient-to-b from-amber-50 to-amber-100">
+      {/* Add a full-page loading overlay */}
+      {isPending && (
+        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <Loader2 className="h-8 w-8 animate-spin text-amber-500 mb-2" />
+            <p>Loading customer data...</p>
+          </div>
+        </div>
+      )}
+
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Customer Lookup</CardTitle>
